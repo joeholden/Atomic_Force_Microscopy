@@ -14,7 +14,7 @@ from AFM_violin_plots import make_plots
 
 # What is the path to the folder containing today's data? End in a forward slash
 # Eg. "C:/Users/joema/Desktop/Ghazi_AFM/033023/"
-PARENT_DIR = "C:/Users/Acer/PycharmProjects/ghazi_afm/practice directory/033023/"
+PARENT_DIR = "C:/Users/Acer/PycharmProjects/ghazi_afm/practice directory/033023 - Copy/"
 
 # What is the path to the folder you want the Excel Workbook Saved to? End in a forward slash
 EXCEL_PATH = "C:/Users/Acer/PycharmProjects/ghazi_afm/practice directory/"
@@ -152,10 +152,14 @@ except NameError:
 # Make Plots
 png_path = os.path.join(PLOT_PATH, "PNGs")
 html_path = os.path.join(PLOT_PATH, "HTML")
+stats_path = os.path.join(PLOT_PATH, "STATS")
+
 if not os.path.exists(png_path):
     os.mkdir(png_path)
 if not os.path.exists(html_path):
     os.mkdir(html_path)
+if not os.path.exists(stats_path):
+    os.mkdir(stats_path)
 
 samples = list(DATA.keys())
 groups = list(DATA[samples[0]])
@@ -181,10 +185,12 @@ for spot in range(number_of_spots):
                 print(f"Rejected {sample}_{c}_{spot} because not all samples had this spot")
 
         tissue_type = DATA[sample][c][0][1]
+        spot_ = DATA[sample][c][spot][0]
+
         try:
-            make_plots(dataframe=df, title=f"{sample.title()} Spot {spot} in {tissue_type}",
-                       paths=[png_path, html_path],
+            make_plots(dataframe=df, title=f"{sample.title()} {spot_.title()} in {tissue_type}",
+                       paths=[png_path, html_path, stats_path],
                        group_list=[i.upper() for i in DATA[sample].keys()], show=False)
         except KeyError as e:
-            print(f"Error making plot. Key Error from {e} in {sample}_{c}_{spot}")
+            print(f"Error making plot. Key Error from {e} in {sample}_{spot}")
 

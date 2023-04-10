@@ -3,6 +3,7 @@ import plotly
 import plotly.graph_objects as go
 import plotly.express as px
 from itertools import cycle
+from one_way_anova_stats import one_way_anova
 
 
 def make_plots(dataframe, title, group_list, paths, show=True):
@@ -10,12 +11,14 @@ def make_plots(dataframe, title, group_list, paths, show=True):
     :param dataframe takes in a dataframe where each column has Young's Modulus Data for a single run
             This is a truncated dataframe, only containing data that should be plotted
     :param title: title of the figure you are making
-    :param paths: list containing the path to PNG and HTML folder
+    :param paths: list containing the path to PNG, HTML folder, and stats folder
     :param group_list: array containing all the group names. Should match column names
     :param show: Should the plot open or not
     Shows plotly violin plot
     saves PNG and HTML
     """
+
+    dataframe.to_csv('test.csv')
 
     plot_title = title
     fig = go.Figure()
@@ -54,5 +57,9 @@ def make_plots(dataframe, title, group_list, paths, show=True):
     plotly.offline.plot(fig, filename=paths[1] + "/" + f'{title}.html')
     fig.write_image(paths[0] + "/" + title + ".png", width=2048, height=2048)
 
+    anova_f, anova_p, tukey_results = one_way_anova(dataframe)
 
-
+    with open(paths[2] + f'/{title}_tukey_results.csv', mode='w') as f:
+        f.write(f"F Statistic,{anova_f}\n")
+        f.write(f"p Value, {anova_p}\n")
+    tukey_results.to_csv(paths[2] + f'/{title}_tukey_results.csv', mode='a')
