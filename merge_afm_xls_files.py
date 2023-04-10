@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 import os
 
-PARENT_DIR = "C:/Users/joema/Desktop/Ghazi_AFM/033023/"
-OUTPUT_FILE_PATH = "C:/Users/joema/Desktop/Ghazi_AFM/"
+PARENT_DIR = "C:/Users/Acer/PycharmProjects/ghazi_afm/practice directory/033023/"
+OUTPUT_FILE_PATH = "C:/Users/Acer/PycharmProjects/ghazi_afm/practice directory/"
 EXP_DATE = "033023"
 
 

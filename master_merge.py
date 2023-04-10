@@ -7,19 +7,20 @@ from openpyxl.utils.cell import get_column_letter
 from openpyxl.styles import Alignment, Font
 from openpyxl.utils.dataframe import dataframe_to_rows
 from datetime import date
+from AFM_violin_plots import make_plots
 
 
 # Modify the 2 Lines Below:
 
 # What is the path to the folder containing today's data? End in a forward slash
 # Eg. "C:/Users/joema/Desktop/Ghazi_AFM/033023/"
-PARENT_DIR = "C:/Users/joema/Desktop/Ghazi_AFM/033023/"
+PARENT_DIR = "C:/Users/Acer/PycharmProjects/ghazi_afm/practice directory/033023/"
 
 # What is the path to the folder you want the Excel Workbook Saved to? End in a forward slash
-EXCEL_PATH = "C:/Users/joema/Desktop/Ghazi_AFM/"
+EXCEL_PATH = "C:/Users/Acer/PycharmProjects/ghazi_afm/practice directory/"
 
 # What is the path to the folder you want the plot images saved to? End in a forward slash
-PLOT_PATH = "C:/Users/joema/Desktop/Ghazi_AFM/"
+PLOT_PATH = "C:/Users/Acer/PycharmProjects/ghazi_afm/practice directory/"
 
 
 def retrieve_modulus_column(path_to_xls):
@@ -146,3 +147,44 @@ try:
     wb.save(EXCEL_PATH + f"RESULTS_{acquisition_date}.xlsx")
 except NameError:
     wb.save(EXCEL_PATH + f"RESULTS_{date.today()}.xlsx")
+
+
+# Make Plots
+png_path = os.path.join(PLOT_PATH, "PNGs")
+html_path = os.path.join(PLOT_PATH, "HTML")
+if not os.path.exists(png_path):
+    os.mkdir(png_path)
+if not os.path.exists(html_path):
+    os.mkdir(html_path)
+
+samples = list(DATA.keys())
+groups = list(DATA[samples[0]])
+number_of_spots = 0
+
+for sample in DATA.keys():
+    for c in DATA[sample]:
+        num_spots = len(DATA[sample][c])
+        if num_spots > number_of_spots:
+            number_of_spots = num_spots
+
+for spot in range(number_of_spots):
+    for sample in DATA.keys():
+        df = None
+        for c in DATA[sample]:
+            try:
+                if df is None:
+                    df = pd.DataFrame(DATA[sample][c][spot][4], columns=[c.upper()])
+
+                else:
+                    df = pd.concat([df, DATA[sample][c][spot][4].rename(c.upper())], axis=1)
+            except IndexError:
+                print(f"Rejected {sample}_{c}_{spot} because not all samples had this spot")
+
+        tissue_type = DATA[sample][c][0][1]
+        try:
+            make_plots(dataframe=df, title=f"{sample.title()} Spot {spot} in {tissue_type}",
+                       paths=[png_path, html_path],
+                       group_list=[i.upper() for i in DATA[sample].keys()], show=False)
+        except KeyError as e:
+            print(f"Error making plot. Key Error from {e} in {sample}_{c}_{spot}")
+
